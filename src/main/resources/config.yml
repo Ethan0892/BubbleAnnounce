@@ -1,0 +1,102 @@
+messages:
+  no_permission: "&cYou do not have permission to use this command."
+  announce_triggered: "&aAll announcements have been triggered!"
+  invalid_argument: "&cInvalid argument! Use &e/test Announce &cto trigger all announcements."
+
+# Global settings
+settings:
+  prefix: "" # prepended to every line (supports & colors and hex)
+  defaultMode: auto # legacy|minimessage|auto
+  defaultType: chat # chat|actionbar|title
+  defaultTitleTimings:
+    fadeIn: 10
+    stay: 60
+    fadeOut: 10
+
+# Announcement blocks are fully configurable. You can:
+# - enable/disable an announcement
+# - choose mode: 'legacy', 'minimessage', or 'auto' (auto-detects & codes, #RRGGBB, or <tags>)
+# - choose type: 'chat', 'actionbar', or 'title'
+# - set interval (minutes) for automatic scheduling (>0). If 0, it won't be scheduled.
+# - add messages (list). Empty strings create blank lines.
+# - add console commands to run along with messages.
+# - coinsGiveAll: if true, runs 'coins giveall 1'.
+# - randomOrder: shuffle the message lines
+# - delayTicksBetweenLines: ticks between each line when sending multi-line announcements
+announcements:
+  discord:
+    enabled: true
+    mode: auto
+    type: chat
+    interval: 39
+    messages:
+      - ""
+      - "&9&l✔ &fJoin the &b&lBubblecraft &fDiscord community on our &9&lDiscord&f!"
+      - "&9&l✔ &b&nhttps://discord.gg/mbP6FAw6zj"
+      - "&9&l✔ &fSee you there!"
+      - ""
+    commands: []
+    coinsGiveAll: false
+    randomOrder: false
+    delayTicksBetweenLines: 0
+  ticket:
+    enabled: true
+    mode: auto
+    type: chat
+    interval: 27
+    messages:
+      - ""
+      - "&c★ &fGot a problem?"
+      - "&c★ &fMake a &lTicket&f In our [/discord]"
+      - ""
+    commands: []
+    coinsGiveAll: false
+    randomOrder: false
+    delayTicksBetweenLines: 0
+  resource:
+    enabled: true
+    mode: auto
+    type: chat
+    interval: 49
+    messages:
+      - ""
+      - "&6★ &fGather resources in the &eResource World &finstead of the Main World!"
+      - "&6★ &fHelp us keep the Main World clean and beautiful."
+      - "&6★ &fUse: &b[/rw] &fto get started!"
+      - ""
+    commands: []
+    coinsGiveAll: false
+    randomOrder: false
+    delayTicksBetweenLines: 0
+  thanks:
+    enabled: true
+    mode: auto
+    type: chat
+    interval: 30
+    messages:
+      - ""
+      - "&6★ &fThanks For Playing!"
+      - ""
+    # Also run coins giveall 1 when this announcement fires
+    commands: []
+    coinsGiveAll: true
+    randomOrder: false
+    delayTicksBetweenLines: 0
+    titleTimings:
+      fadeIn: 10
+      stay: 60
+      fadeOut: 10
+  voting:
+    enabled: false
+    mode: auto
+    type: chat
+    interval: 0 # no schedule; only via /runannouncements unless set >0
+    messages:
+      - ""
+      - "&6★ &fMade a ticket in our &9&lDiscord &fto report Bugs"
+      - "&6★ &fIf you found a unknown bug you get a &cbug bounty&f reward"
+      - ""
+    commands: []
+    coinsGiveAll: false
+    randomOrder: false
+    delayTicksBetweenLines: 0
