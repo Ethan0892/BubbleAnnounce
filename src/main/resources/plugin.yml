@@ -1,22 +1,37 @@
 name: BubbleAnnounce
 main: com.bubblecraft.bubbleannounce.BubbleAnnounce
-version: 1.0.0
+version: 1.1.0
 author: eirvi
-description: Highly configurable announcement plugin for Bubblecraft
+description: Highly configurable announcement plugin for Paper/Purpur
 api-version: 1.21
+
+# Supported platforms: Paper, Purpur, Spigot
+# Minimum Minecraft version: 1.21.1
+
+permissions:
+  bubbleannounce.admin:
+    description: Admin access to BubbleAnnounce commands
+    default: op
+  test.announce:
+    description: Permission to test announcements
+    default: op
+  announce.run:
+    description: Permission to run announcements manually
+    default: op
+
 commands:
   test:
-    description: Triggers all announcements with permission
-    usage: /test <Announce>
+    description: Test trigger for announcements
+    usage: /test Announce
     permission: test.announce
     permission-message: "&cYou do not have permission to use this command."
   runannouncements:
-    description: Runs all announcements (hidden from players)
+    description: Manually trigger all announcements
     usage: /runannouncements
     permission: announce.run
     permission-message: "&cYou do not have permission to use this command."
   bubbleannounce:
-    description: Admin command to manage BubbleAnnounce
+    description: BubbleAnnounce admin command
     usage: /bubbleannounce reload
     permission: bubbleannounce.admin
     permission-message: "&cYou do not have permission to use this command."
