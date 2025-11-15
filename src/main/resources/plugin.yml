@@ -1,7 +1,7 @@
 name: BubbleAnnounce
 main: com.bubblecraft.bubbleannounce.BubbleAnnounce
 version: 1.1.0
-author: eirvi
+author: BubbleCraft
 description: Highly configurable announcement plugin for Paper/Purpur
 api-version: 1.21
 
