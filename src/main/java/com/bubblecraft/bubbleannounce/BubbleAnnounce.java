@@ -5,8 +5,11 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -18,33 +21,58 @@ import me.clip.placeholderapi.PlaceholderAPI;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
-public class BubbleAnnounce extends JavaPlugin {
+public class BubbleAnnounce extends JavaPlugin implements TabCompleter {
     private FileConfiguration config;
     private final List<Announcement> announcements = new ArrayList<>();
     private final List<BukkitTask> scheduledTasks = new ArrayList<>();
+    private final Map<UUID, Long> playerCooldowns = new HashMap<>();
     private final MiniMessage mini = MiniMessage.miniMessage();
 
     // Global settings
     private String globalPrefix = "";
-    private String defaultMode = "auto"; // legacy|minimessage|auto
-    private String defaultType = "chat"; // chat|actionbar|title
+    private String defaultMode = "auto";
+    private String defaultType = "chat";
     private int defaultFadeIn = 10, defaultStay = 60, defaultFadeOut = 10;
     private boolean hasPapi = false;
+    private boolean debugMode = false;
+    private long globalCooldown = 0;
 
     @Override
     public void onEnable() {
         saveDefaultConfig();
         this.config = getConfig();
-    this.hasPapi = Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null;
+        this.hasPapi = Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null;
         loadAnnouncements();
         scheduleAnnouncements();
+        
+        // Use custom startup messages
+        getLogger().info(getMessage("startup_enabled", ""));
+        getLogger().info(getMessage("startup_loaded", "").replace("{count}", String.valueOf(announcements.size())));
+        if (hasPapi) {
+            getLogger().info(getMessage("startup_papi", ""));
+        }
     }
 
     @Override
     public void onDisable() {
         for (BukkitTask t : scheduledTasks) t.cancel();
         scheduledTasks.clear();
+        getLogger().info(getMessage("shutdown", "BubbleAnnounce disabled!"));
+    }
+    
+    private String getMessage(String key, String defaultValue) {
+        String msg = config.getString("messages." + key, defaultValue);
+        return msg == null ? defaultValue : msg;
+    }
+    
+    private String formatMessage(String key, String defaultValue, Map<String, String> placeholders) {
+        String msg = getMessage(key, defaultValue);
+        for (Map.Entry<String, String> entry : placeholders.entrySet()) {
+            msg = msg.replace("{" + entry.getKey() + "}", entry.getValue());
+        }
+        return msg;
     }
 
     private void loadAnnouncements() {
@@ -200,45 +228,162 @@ public class BubbleAnnounce extends JavaPlugin {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (command.getName().equalsIgnoreCase("test")) {
             if (!sender.hasPermission("test.announce")) {
-                sender.sendMessage(color(config.getString("messages.no_permission", "&cYou do not have permission to use this command.")));
+                sender.sendMessage(color(getMessage("no_permission", "&cYou do not have permission to use this command.")));
                 return true;
             }
             if (args.length == 1 && args[0].equalsIgnoreCase("Announce")) {
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "runannouncements");
-                sender.sendMessage(color(config.getString("messages.announce_triggered", "&aAll announcements have been triggered!")));
+                sender.sendMessage(color(getMessage("announce_triggered", "&aAll announcements have been triggered!")));
             } else {
-                sender.sendMessage(color(config.getString("messages.invalid_argument", "&cInvalid argument! Use &e/test Announce &cto trigger all announcements.")));
+                sender.sendMessage(color(getMessage("invalid_argument", "&cInvalid argument! Use &e/test Announce &cto trigger all announcements.")));
             }
             return true;
         }
+        
         if (command.getName().equalsIgnoreCase("runannouncements")) {
             if (!sender.hasPermission("announce.run")) {
-                sender.sendMessage(color(config.getString("messages.no_permission", "&cYou do not have permission to use this command.")));
+                sender.sendMessage(color(getMessage("no_permission", "&cYou do not have permission to use this command.")));
                 return true;
             }
             runAllAnnouncementsOnce();
             return true;
         }
+        
         if (command.getName().equalsIgnoreCase("bubbleannounce")) {
-            if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
-                if (!sender.hasPermission("bubbleannounce.admin")) {
-                    sender.sendMessage(color(config.getString("messages.no_permission", "&cYou do not have permission to use this command.")));
-                    return true;
-                }
-                for (BukkitTask t : scheduledTasks) t.cancel();
-                scheduledTasks.clear();
-                reloadConfig();
-                this.config = getConfig();
-                this.hasPapi = Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null;
-                loadAnnouncements();
-                scheduleAnnouncements();
-                sender.sendMessage(color("&aBubbleAnnounce configuration reloaded."));
+            if (!sender.hasPermission("bubbleannounce.admin")) {
+                sender.sendMessage(color(getMessage("no_permission", "&cYou do not have permission to use this command.")));
                 return true;
             }
-            sender.sendMessage(color("&eUsage: /bubbleannounce reload"));
+            
+            if (args.length == 0) {
+                sendHelp(sender);
+                return true;
+            }
+            
+            switch (args[0].toLowerCase()) {
+                case "reload":
+                    try {
+                        for (BukkitTask t : scheduledTasks) t.cancel();
+                        scheduledTasks.clear();
+                        reloadConfig();
+                        this.config = getConfig();
+                        this.hasPapi = Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null;
+                        loadAnnouncements();
+                        scheduleAnnouncements();
+                        
+                        Map<String, String> placeholders = new HashMap<>();
+                        placeholders.put("count", String.valueOf(announcements.size()));
+                        sender.sendMessage(color(formatMessage("reload_success", "&a✔ BubbleAnnounce configuration reloaded! ({count} announcements)", placeholders)));
+                    } catch (Exception e) {
+                        sender.sendMessage(color(getMessage("reload_failed", "&c✖ Failed to reload configuration. Check console for errors.")));
+                        e.printStackTrace();
+                    }
+                    break;
+                    
+                case "list":
+                    sender.sendMessage(color(getMessage("list_header", "&b&l━━━━━━ Announcements ━━━━━━")));
+                    if (announcements.isEmpty()) {
+                        sender.sendMessage(color(getMessage("list_empty", "&eNo announcements configured.")));
+                    } else {
+                        for (Announcement a : announcements) {
+                            Map<String, String> placeholders = new HashMap<>();
+                            placeholders.put("id", a.id);
+                            placeholders.put("interval", a.intervalMin > 0 ? a.intervalMin + "min" : "Manual");
+                            
+                            String messageKey = a.enabled ? "list_entry_enabled" : "list_entry_disabled";
+                            String defaultMsg = a.enabled ? 
+                                "&7• &e{id} &a✔ Enabled &7({interval})" :
+                                "&7• &e{id} &c✖ Disabled &7({interval})";
+                            sender.sendMessage(color(formatMessage(messageKey, defaultMsg, placeholders)));
+                        }
+                    }
+                    sender.sendMessage(color(getMessage("list_footer", "&b&l━━━━━━━━━━━━━━━━━━━━━━━")));
+                    break;
+                    
+                case "toggle":
+                    if (args.length < 2) {
+                        sender.sendMessage(color(getMessage("toggle_usage", "&cUsage: /bubbleannounce toggle <announcement_id>")));
+                        return true;
+                    }
+                    String id = args[1];
+                    Announcement found = null;
+                    for (Announcement a : announcements) {
+                        if (a.id.equalsIgnoreCase(id)) {
+                            found = a;
+                            break;
+                        }
+                    }
+                    if (found != null) {
+                        found.enabled = !found.enabled;
+                        config.set("announcements." + found.id + ".enabled", found.enabled);
+                        saveConfig();
+                        
+                        Map<String, String> placeholders = new HashMap<>();
+                        placeholders.put("id", found.id);
+                        String messageKey = found.enabled ? "toggle_enabled" : "toggle_disabled";
+                        String defaultMsg = found.enabled ? "&e{id} &7is now &aEnabled" : "&e{id} &7is now &cDisabled";
+                        sender.sendMessage(color(formatMessage(messageKey, defaultMsg, placeholders)));
+                        
+                        // Reschedule
+                        for (BukkitTask t : scheduledTasks) t.cancel();
+                        scheduledTasks.clear();
+                        scheduleAnnouncements();
+                    } else {
+                        Map<String, String> placeholders = new HashMap<>();
+                        placeholders.put("id", id);
+                        sender.sendMessage(color(formatMessage("toggle_not_found", "&cAnnouncement not found: &e{id}", placeholders)));
+                    }
+                    break;
+                    
+                case "test":
+                    if (args.length < 2) {
+                        sender.sendMessage(color(getMessage("test_usage", "&cUsage: /bubbleannounce test <announcement_id>")));
+                        return true;
+                    }
+                    String testId = args[1];
+                    Announcement testFound = null;
+                    for (Announcement a : announcements) {
+                        if (a.id.equalsIgnoreCase(testId)) {
+                            testFound = a;
+                            break;
+                        }
+                    }
+                    if (testFound != null) {
+                        runAnnouncement(testFound);
+                        Map<String, String> placeholders = new HashMap<>();
+                        placeholders.put("id", testId);
+                        sender.sendMessage(color(formatMessage("test_triggered", "&aTriggered announcement: &e{id}", placeholders)));
+                    } else {
+                        Map<String, String> placeholders = new HashMap<>();
+                        placeholders.put("id", testId);
+                        sender.sendMessage(color(formatMessage("test_not_found", "&cAnnouncement not found: &e{id}", placeholders)));
+                    }
+                    break;
+                    
+                case "debug":
+                    debugMode = !debugMode;
+                    String messageKey = debugMode ? "debug_enabled" : "debug_disabled";
+                    String defaultMsg = debugMode ? "&eDebug mode: &aON" : "&eDebug mode: &cOFF";
+                    sender.sendMessage(color(getMessage(messageKey, defaultMsg)));
+                    break;
+                    
+                default:
+                    sendHelp(sender);
+            }
             return true;
         }
+        
         return false;
+    }
+    
+    private void sendHelp(CommandSender sender) {
+        sender.sendMessage(color(getMessage("help_header", "&b&l━━━━━ BubbleAnnounce v1.1.0 ━━━━━")));
+        sender.sendMessage(color(getMessage("help_reload", "&e/bubbleannounce reload &7- Reload configuration")));
+        sender.sendMessage(color(getMessage("help_list", "&e/bubbleannounce list &7- List all announcements")));
+        sender.sendMessage(color(getMessage("help_toggle", "&e/bubbleannounce toggle <id> &7- Toggle announcement")));
+        sender.sendMessage(color(getMessage("help_test", "&e/bubbleannounce test <id> &7- Test specific announcement")));
+        sender.sendMessage(color(getMessage("help_debug", "&e/bubbleannounce debug &7- Toggle debug mode")));
+        sender.sendMessage(color(getMessage("help_footer", "&b&l━━━━━━━━━━━━━━━━━━━━━━━━━━")));
     }
 
     private String color(String input) {
@@ -277,7 +422,7 @@ public class BubbleAnnounce extends JavaPlugin {
 
     private static class Announcement {
         final String id;
-        final boolean enabled;
+        boolean enabled; // Made non-final to allow toggle
         final String mode; // legacy|minimessage|auto
         final String type; // chat|actionbar|title
         final int intervalMin;

@@ -1,37 +1,116 @@
 # BubbleAnnounce
 
-BubbleAnnounce is a highly configurable Minecraft server plugin for automated and manual announcements. Designed for Bubblecraft, it supports advanced formatting, scheduling, and integration with PlaceholderAPI. Easily manage server-wide messages, reminders, and events with flexible configuration options.
+Auto announcements for Minecraft servers. Super easy to configure.
 
-## Features
-- **Configurable Announcements:** Define unlimited announcements with custom messages, intervals, and display types (chat, actionbar, title).
-- **Advanced Formatting:** Supports legacy color codes, MiniMessage, and hex colors.
-- **Scheduling:** Automatically schedule announcements at set intervals, or trigger them manually via commands.
-- **PlaceholderAPI Support:** Dynamic placeholders for player and server data.
-- **Admin Commands:** Reload config, trigger announcements, and manage settings in-game.
-- **Permission System:** Restrict commands and announcements to specific user groups.
-- **Multi-line & Randomized Messages:** Send multi-line announcements and shuffle message order.
+## 🚀 Quick Start (3 Steps)
 
-## Example Commands
-- `/test <Announce>` — Triggers all announcements (requires `test.announce` permission)
-- `/runannouncements` — Runs all announcements (requires `announce.run` permission)
-- `/bubbleannounce reload` — Reloads the plugin configuration (requires `bubbleannounce.admin` permission)
+1. Put `BubbleAnnounce.jar` in your `plugins` folder
+2. Start server (creates `config.yml`)
+3. Edit `config.yml` - change the messages and type `/bubbleannounce reload`
 
-## Quick Start
-1. Place the plugin JAR in your server's `plugins` folder.
-2. Start the server to generate default config files.
-3. Edit `config.yml` and `plugin.yml` in `src/main/resources` to customize announcements and settings.
-4. Use admin commands to reload or test announcements in-game.
+Done! 🎉
 
-## Configuration
-See `config.yml` for detailed options:
-- Enable/disable announcements
-- Set message mode (`legacy`, `minimessage`, `auto`)
-- Choose display type (`chat`, `actionbar`, `title`)
-- Schedule intervals, randomize order, and more
+## ✏️ How to Edit Announcements
 
-## Requirements
-- Minecraft 1.21+
-- [PlaceholderAPI](https://www.spigotmc.org/resources/placeholderapi.6245/) (optional, for placeholders)
+Open `plugins/BubbleAnnounce/config.yml` and scroll to the announcements:
 
----
-For more details, see the example config files and source code.
+```yaml
+announcements:
+  discord:
+    enabled: true         # Turn on/off
+    interval: 39          # Every 39 minutes
+    messages:             # ← EDIT THIS!
+      - ""
+      - "&9★ &fJoin our &9&lDiscord&f server!"
+      - ""
+```
+
+**Change the text** in `messages:` then type `/bubbleannounce reload` in-game.
+
+## ➕ Add New Announcement (Copy & Paste)
+
+1. Copy any announcement in `config.yml`
+2. Change the name (like `discord:` → `vote:`)
+3. Edit the messages
+4. `/bubbleannounce reload`
+
+Example:
+```yaml
+  vote:              # ← New name
+    enabled: true
+    interval: 30
+    messages:
+      - "&eVote for us and get rewards!"
+```
+
+## 🎨 Color Codes
+
+Add these to your messages:
+- `&a` = green  
+- `&c` = red  
+- `&e` = yellow  
+- `&b` = blue  
+- `&6` = gold
+- `&l` = bold  
+- `&f` = white
+
+Example: `"&a&lGREEN BOLD TEXT &cred text"`
+
+## 📋 Commands
+
+| Command | What it does |
+|---------|--------------|
+| `/bubbleannounce reload` | Reload after editing config |
+| `/bubbleannounce list` | See all announcements |
+| `/bubbleannounce toggle <name>` | Turn announcement on/off |
+| `/runannouncements` | Send all announcements now |
+
+## 💡 Cool Examples
+
+**Every 30 minutes:**
+```yaml
+  welcome:
+    enabled: true
+    interval: 30
+    messages:
+      - "&6★ Welcome to our server!"
+```
+
+**Give coins to everyone:**
+```yaml
+  thanks:
+    enabled: true
+    interval: 45
+    messages:
+      - "&aThanks for playing!"
+    coinsGiveAll: true    # Everyone gets 1 coin!
+```
+
+**Manual only (no timer):**
+```yaml
+  event:
+    enabled: true
+    interval: 0           # 0 = never auto-send
+    messages:
+      - "&c&lEvent starting in 5 minutes!"
+```
+
+**VIP only with sound:**
+```yaml
+  vip_perk:
+    enabled: true
+    interval: 20
+    messages:
+      - "&6[VIP] &eSpecial VIP perk unlocked!"
+    permission: "group.vip"
+    sound: "ENTITY_EXPERIENCE_ORB_PICKUP"
+```
+
+## 🎯 Requirements
+
+- Minecraft Paper/Purpur/Spigot 1.21+
+- Java 21
+
+## 📚 More Help
+
+Everything is explained in `config.yml` with comments. Just read the file!

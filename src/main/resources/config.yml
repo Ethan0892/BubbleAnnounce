@@ -4,193 +4,182 @@
 # ╚════════════════════════════════════════════════════════════════╝
 
 # ═══════════════════════════════════════════════════════════════════
-# COMMAND MESSAGES
+# 📝 SUPER EASY GUIDE - READ THIS FIRST!
 # ═══════════════════════════════════════════════════════════════════
-# Customize feedback messages for players using commands
+# Want to ADD a new announcement?    → Copy any announcement below, change the name, edit the text
+# Want to EDIT an announcement?      → Just change the text in "messages:"
+# Want to REMOVE an announcement?    → Delete it or set "enabled: false"
+# Made changes?                      → Type: /bubbleannounce reload
+#
+# That's it! Scroll down to see examples ⬇️
+#
+# ═══════════════════════════════════════════════════════════════════
+# 💬 CUSTOM MESSAGES (Optional - ignore if you want defaults)
+# ═══════════════════════════════════════════════════════════════════
+# Fully customize all plugin messages and feedback
+# Supports & color codes, hex colors (#RRGGBB), and placeholders
 messages:
-  # Message shown when a player lacks permission
+  # Command feedback messages
   no_permission: "&cYou do not have permission to use this command."
-  # Message shown when announcements are triggered
   announce_triggered: "&aAll announcements have been triggered!"
-  # Message shown when command has invalid arguments
   invalid_argument: "&cInvalid argument! Use &e/test Announce &cto trigger all announcements."
+  
+  # Reload command messages
+  reload_success: "&a✔ BubbleAnnounce configuration reloaded! &7({count} announcements)"
+  reload_failed: "&c✖ Failed to reload configuration. Check console for errors."
+  
+  # List command messages
+  list_header: "&b&l━━━━━━ Announcements ━━━━━━"
+  list_footer: "&b&l━━━━━━━━━━━━━━━━━━━━━━━━"
+  list_entry_enabled: "&7• &e{id} &a✔ Enabled &7({interval})"
+  list_entry_disabled: "&7• &e{id} &c✖ Disabled &7({interval})"
+  list_empty: "&eNo announcements configured."
+  
+  # Toggle command messages
+  toggle_enabled: "&e{id} &7is now &aEnabled"
+  toggle_disabled: "&e{id} &7is now &cDisabled"
+  toggle_not_found: "&cAnnouncement not found: &e{id}"
+  toggle_usage: "&cUsage: /bubbleannounce toggle <announcement_id>"
+  
+  # Test command messages
+  test_triggered: "&aTriggered announcement: &e{id}"
+  test_not_found: "&cAnnouncement not found: &e{id}"
+  test_usage: "&cUsage: /bubbleannounce test <announcement_id>"
+  
+  # Debug command messages
+  debug_enabled: "&eDebug mode: &aON"
+  debug_disabled: "&eDebug mode: &cOFF"
+  
+  # Help menu messages
+  help_header: "&b&l━━━━━ BubbleAnnounce v1.1.0 ━━━━━"
+  help_footer: "&b&l━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  help_reload: "&e/bubbleannounce reload &7- Reload configuration"
+  help_list: "&e/bubbleannounce list &7- List all announcements"
+  help_toggle: "&e/bubbleannounce toggle <id> &7- Toggle announcement"
+  help_test: "&e/bubbleannounce test <id> &7- Test specific announcement"
+  help_debug: "&e/bubbleannounce debug &7- Toggle debug mode"
+  
+  # Plugin startup messages (console)
+  startup_enabled: "BubbleAnnounce v1.1.0 enabled!"
+  startup_loaded: "Loaded {count} announcements"
+  startup_papi: "PlaceholderAPI integration enabled"
+  startup_scheduled: "Scheduled announcement '{id}' every {interval} minutes"
+  
+  # Plugin shutdown messages (console)
+  shutdown: "BubbleAnnounce disabled!"
+  
+  # Debug messages (console)
+  debug_running: "Running announcement: {id}"
+  debug_no_players: "No eligible players for announcement: {id}"
+  debug_command_executed: "Executed command: {command}"
+  debug_invalid_sound: "Invalid sound: {sound}"
 
 # ═══════════════════════════════════════════════════════════════════
-# GLOBAL SETTINGS
+# ⚙️ SETTINGS (You probably don't need to change these)
 # ═══════════════════════════════════════════════════════════════════
-# These settings apply to all announcements unless overridden
 settings:
-  # Prefix prepended to every announcement message
-  # Supports & color codes and hex colors (#RRGGBB)
-  # Example: "&c[INFO] &f" or "&#FF0000[!] &f"
-  prefix: ""
-  
-  # Default text format for announcements
-  # - legacy: Use & color codes (&c for red, &a for green, etc.)
-  # - minimessage: Use modern MiniMessage format (<red>, <bold>, etc.)
-  # - auto: Automatically detect format (& codes, #HEX colors, or <tags>)
-  defaultMode: auto
-  
-  # Default delivery method for announcements
-  # - chat: Send as regular chat message
-  # - actionbar: Display in the action bar (above hotbar)
-  # - title: Show as title on screen
-  defaultType: chat
-  
-  # Default title screen timings (in ticks; 20 ticks = 1 second)
-  # Only used when type is 'title'
-  defaultTitleTimings:
-    fadeIn: 10    # Time for title to fade in
-    stay: 60      # Time title stays on screen
-    fadeOut: 10   # Time for title to fade out
+  prefix: ""            # Add text before every announcement (optional)
+  debugMode: false      # Turn on for troubleshooting
 
 # ═══════════════════════════════════════════════════════════════════
-# ANNOUNCEMENTS
+# 🎯 ANNOUNCEMENTS - Edit these!
 # ═══════════════════════════════════════════════════════════════════
-# Each announcement block below is fully customizable
-# You can add, remove, or modify announcements as needed
-
+# COLOR CODES: &a=green &c=red &e=yellow &b=blue &6=gold &l=bold &f=white
+# Copy any announcement below to make a new one!
+#
 announcements:
   
-  # ─────────────────────────────────────────────────────────────
-  # DISCORD PROMOTION ANNOUNCEMENT
-  # ─────────────────────────────────────────────────────────────
+  # DISCORD - Join our Discord server (Copy this to make new announcements!)
   discord:
-    # Enable/disable this announcement
-    enabled: true
-    
-    # Text format (legacy, minimessage, or auto)
-    mode: auto
-    
-    # Display type (chat, actionbar, or title)
-    type: chat
-    
-    # How often to send (in minutes)
-    # Set to 0 to disable automatic scheduling (only run manually)
-    interval: 39
-    
-    # The announcement messages (each line is sent separately)
-    # Empty strings ("") create blank lines for spacing
-    messages:
+    enabled: true         # Turn on/off
+    interval: 39          # Every 39 minutes
+    messages:             # ← EDIT THE TEXT BELOW!
       - ""
-      - "&9&l✔ &fJoin the &b&lBubblecraft &fDiscord community on our &9&lDiscord&f!"
-      - "&9&l✔ &b&nhttps://discord.gg/mbP6FAw6zj"
-      - "&9&l✔ &fSee you there!"
+      - "&9★ &fJoin our &9&lDiscord&f server!"
+      - "&9★ &b&nhttps://discord.gg/mbP6FAw6zj"
       - ""
-    
-    # Console commands to execute when announcement fires
-    # Example: ["give @a diamond 1", "say Announcement executed!"]
-    commands: []
-    
-    # Give all online players 1 coin when this announcement fires
-    # Requires a coins plugin that understands 'coins giveall' command
-    coinsGiveAll: false
-    
-    # Randomize message line order
-    randomOrder: false
-    
-    # Delay (in ticks) between each message line
-    # 0 = send all lines at once; 20 = 1 second between lines
-    delayTicksBetweenLines: 0
 
-  # ─────────────────────────────────────────────────────────────
-  # SUPPORT TICKET ANNOUNCEMENT
-  # ─────────────────────────────────────────────────────────────
+  # TICKET - Support tickets
   ticket:
     enabled: true
-    mode: auto
-    type: chat
     interval: 27
     messages:
       - ""
-      - "&c★ &fGot a problem?"
-      - "&c★ &fMake a &lTicket&f in our &9Discord&f!"
+      - "&c★ &fGot a problem? Make a ticket in Discord!"
       - ""
-    commands: []
-    coinsGiveAll: false
-    randomOrder: false
-    delayTicksBetweenLines: 0
 
-  # ─────────────────────────────────────────────────────────────
-  # RESOURCE WORLD ANNOUNCEMENT
-  # ─────────────────────────────────────────────────────────────
+  # RESOURCE - Resource world reminder
   resource:
     enabled: true
-    mode: auto
-    type: chat
     interval: 49
     messages:
       - ""
-      - "&6★ &fGather resources in the &eResource World &finstead of the Main World!"
-      - "&6★ &fHelp us keep the Main World clean and beautiful."
-      - "&6★ &fUse: &b/rw &fto get started!"
+      - "&6★ &fGather resources in the &eResource World&f!"
+      - "&6★ &fUse &b/rw &fto teleport there!"
       - ""
-    commands: []
-    coinsGiveAll: false
-    randomOrder: false
-    delayTicksBetweenLines: 0
 
-  # ─────────────────────────────────────────────────────────────
-  # GRATITUDE ANNOUNCEMENT (with coin reward)
-  # ─────────────────────────────────────────────────────────────
+  # THANKS - Thank players (gives everyone 1 coin!)
   thanks:
     enabled: true
-    mode: auto
-    type: chat
     interval: 30
     messages:
       - ""
       - "&6★ &fThanks for playing on &b&lBubblecraft&f!"
       - ""
-    commands: []
-    coinsGiveAll: true  # This will run "coins giveall 1" automatically
-    randomOrder: false
-    delayTicksBetweenLines: 0
+    coinsGiveAll: true    # ← Everyone gets 1 coin when this sends!
 
-  # ─────────────────────────────────────────────────────────────
-  # BUG BOUNTY ANNOUNCEMENT (disabled by default)
-  # ─────────────────────────────────────────────────────────────
+  # BUG BOUNTY - Bug reports (OFF by default, manual only)
   bugbounty:
-    enabled: false
-    mode: auto
-    type: chat
-    interval: 0  # Set to 0 to only trigger manually with /runannouncements
+    enabled: false        # Change to true to enable
+    interval: 0           # 0 = manual only (use /runannouncements)
     messages:
       - ""
-      - "&6★ &fFound a bug? Report it in our &9&lDiscord&f!"
-      - "&6★ &fBug bounties available for valid reports!"
+      - "&c★ &fFound a bug? Report it in Discord for rewards!"
       - ""
-    commands: []
-    coinsGiveAll: false
-    randomOrder: false
-    delayTicksBetweenLines: 0
+
+  # VIP EXAMPLE - Shows advanced features (OFF by default)
+  vip_example:
+    enabled: false        # Set to true to test VIP features
+    interval: 15
+    messages:
+      - "&6[VIP] &eVIP members get exclusive perks!"
+    permission: "group.vip"           # Only players with this permission see it
+    worlds: ["world"]                 # Only in specific worlds
+    sound: "ENTITY_EXPERIENCE_ORB_PICKUP"  # Plays a sound
+    cooldownSeconds: 300              # 5 minute cooldown per player
 
 # ═══════════════════════════════════════════════════════════════════
-# USEFUL COMMANDS
+# 📋 COPY THIS TO MAKE A NEW ANNOUNCEMENT!
 # ═══════════════════════════════════════════════════════════════════
-# /test Announce               - Test all announcements
-# /runannouncements            - Manually trigger all enabled announcements
-# /bubbleannounce reload       - Reload configuration from file
+#  my_new_announcement:       # ← Change this name!
+#    enabled: true            # Turn it on
+#    interval: 20             # Every 20 minutes
+#    messages:                # Your text here
+#      - ""
+#      - "&a★ Your message here!"
+#      - ""
+
+# ═══════════════════════════════════════════════════════════════════
+# 🎮 COMMANDS
+# ═══════════════════════════════════════════════════════════════════
+# /bubbleannounce reload     - Reload after editing config
+# /bubbleannounce list       - See all announcements
+# /bubbleannounce toggle <id> - Turn announcement on/off
+# /bubbleannounce test <id>  - Test an announcement
+# /runannouncements          - Send all announcements now
 #
 # ═══════════════════════════════════════════════════════════════════
-# TEXT FORMAT GUIDE
+# 🎨 EXTRA: Advanced Settings (You probably don't need these!)
 # ═══════════════════════════════════════════════════════════════════
+# Want to add these to an announcement? Just add them below "messages:"
 #
-# LEGACY FORMAT (& color codes):
-#   &0 Black      &8 Dark Gray     &1 Dark Blue   &9 Blue
-#   &2 Dark Green &a Green         &3 Dark Cyan   &b Cyan
-#   &4 Dark Red   &c Red           &5 Dark Purple &d Purple
-#   &6 Gold       &e Yellow        &7 Gray        &f White
-#   &l Bold       &o Italic        &m Strikethrough  &n Underline
-#   &k Obfuscated
-#   Hex: &#FF0000 (for red) or #FF0000
-#
-# MINIMESSAGE FORMAT:
-#   <red>, <dark_red>, <gold>, <yellow>, <green>, <dark_green>
-#   <cyan>, <dark_cyan>, <blue>, <dark_blue>, <purple>, <dark_purple>
-#   <white>, <gray>, <dark_gray>, <black>
-#   <bold>, <italic>, <underlined>, <strikethrough>, <obfuscated>
-#   <#RRGGBB> for custom colors
-#   Example: <bold><red>Bold Red Text</red></bold>
-#
-# ═══════════════════════════════════════════════════════════════════
+# mode: auto                 - Text format (auto/legacy/minimessage)
+# type: chat                 - Display type (chat/actionbar/title)
+# commands: []               - Run commands when announcement sends
+# randomOrder: false         - Randomize message lines
+# delayTicksBetweenLines: 0  - Delay between lines (20 = 1 second)
+# permission: ""             - Only players with this permission see it
+# worlds: []                 - Only show in specific worlds
+# sound: ""                  - Play a sound (ENTITY_EXPERIENCE_ORB_PICKUP, etc.)
+# prefix: ""                 - Custom prefix for this announcement
+# cooldownSeconds: 0         - Cooldown before same player sees it again
