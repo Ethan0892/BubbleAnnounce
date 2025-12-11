@@ -2,9 +2,12 @@ name: BubbleAnnounce
 main: com.bubblecraft.bubbleannounce.BubbleAnnounce
 version: 1.1.0
 author: BubbleCraft
-description: Highly configurable announcement plugin for Paper/Purpur
+description: Highly configurable announcement plugin for Paper/Purpur (Bukkit-based servers only, NOT Velocity/BungeeCord)
 api-version: 1.21
 
+# ⚠️ IMPORTANT: This is a BUKKIT/SPIGOT/PAPER plugin
+# Install on backend servers (Paper/Spigot/Purpur)
+# DO NOT install on proxy servers (Velocity/BungeeCord/Waterfall)
 # Supported platforms: Paper, Purpur, Spigot
 # Minimum Minecraft version: 1.21.1
 

@@ -4,11 +4,14 @@ Auto announcements for Minecraft servers. Super easy to configure.
 
 ## 🚀 Quick Start (3 Steps)
 
-1. Put `BubbleAnnounce.jar` in your `plugins` folder
+1. Put `BubbleAnnounce.jar` in your **Paper/Spigot server's** `plugins` folder (**NOT Velocity!**)
 2. Start server (creates `config.yml`)
 3. Edit `config.yml` - change the messages and type `/bubbleannounce reload`
 
 Done! 🎉
+
+> ⚠️ **IMPORTANT:** This is a **Bukkit/Spigot/Paper plugin**, not a Velocity plugin!  
+> Put it in your **backend servers** (Paper/Spigot), NOT in your Velocity proxy's plugins folder.
 
 ## ✏️ How to Edit Announcements
 
@@ -108,9 +111,34 @@ Example: `"&a&lGREEN BOLD TEXT &cred text"`
 
 ## 🎯 Requirements
 
-- Minecraft Paper/Purpur/Spigot 1.21+
-- Java 21
+- **Server Type:** Paper/Purpur/Spigot 1.21+ (Backend servers only)
+- **Java:** 21
+- **NOT compatible with:** Velocity, BungeeCord, Waterfall (proxy servers)
+
+> 💡 **Using a proxy?** Install this plugin on your **backend Paper/Spigot servers**, not on the proxy itself.
 
 ## 📚 More Help
 
 Everything is explained in `config.yml` with comments. Just read the file!
+
+## 🔧 Troubleshooting
+
+**Error: "No velocity-plugin.json present"**
+- ❌ You tried to install on a Velocity proxy server
+- ✅ Install on your **Paper/Spigot backend servers** instead
+- This is a Bukkit plugin, NOT a Velocity plugin!
+
+**Where to install if using a proxy:**
+```
+Velocity Proxy (proxy server)
+├── plugins/
+│   └── ❌ DO NOT put BubbleAnnounce here!
+│
+Backend Server 1 (Paper/Spigot)
+├── plugins/
+│   └── ✅ BubbleAnnounce.jar goes here!
+│
+Backend Server 2 (Paper/Spigot)  
+├── plugins/
+│   └── ✅ BubbleAnnounce.jar goes here too!
+```
